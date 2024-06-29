@@ -28,6 +28,6 @@ install_brew_packages() {
 	)
 
 	info "Installing brew packages..."
-	# install_brew_formulas "${PACKAGES[@]}"
+	install_brew_formulas "${PACKAGES[@]}"
 	success "Installed brew packages successfully"
 }
