@@ -148,3 +148,18 @@ for file in ~/.{exports,aliases,functions,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
 unset file;
+
+# This is required otherwise nvim doesn't load venv properly
+function nvimvenv {
+  if [[ -e "$VIRTUAL_ENV" && -f "$VIRTUAL_ENV/bin/activate" ]]; then
+
+    echo "Activate"
+    source "$VIRTUAL_ENV/bin/activate"
+    command nvim "$@"
+    deactivate
+  else
+    command nvim "$@"
+  fi
+}
+
+alias nvim=nvimvenv
