@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# quick editing and sourcing of config files
+alias ez='nvim ~/.zshrc'
+alias sz='source ~/.zshrc'
+alias config='nvim ~/.config'
+
+alias v="nvim ."
+alias vim="nvim"
+
+# Easier navigation: .., ..., ...., ....., ~ and -
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
+
+# Get week number
+alias week='date +%V'
+
+# IP addresses
+alias localip="ipconfig getifaddr en0"
+
+# Recursively delete `.DS_Store` files
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+
+# Show/hide hidden files in Finder
+alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+# Reload the shell (i.e. invoke as a login shell)
+alias reload="exec ${SHELL} -l"
+
+# Print each PATH entry on a separate line
+alias path='echo -e ${PATH//:/\\n}'
+
+alias afind='ack -il'
+alias c=clear
+alias djshell='python manage.py shell'
+alias edit-in-kitty='kitten edit-in-kitty'
+alias egrep='grep -E --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
+alias fgrep='grep -F --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
+
+alias g=git
+alias ga='git add'
+alias gaa='git add --all'
+alias gb='git branch'
+alias gcb='git checkout -b'
+alias gcm='git checkout $(git_main_branch)'
+alias gco='git checkout'
+alias gcp='git cherry-pick'
+alias gcpa='git cherry-pick --abort'
+alias gcpc='git cherry-pick --continue'
+alias gd='git diff'
+alias gf='git fetch'
+alias  gfg='git ls-files | grep'
+alias  gl='git pull'
+alias  gm='git merge'
+alias  gp='git push'
+alias  gpf='git push --force-with-lease'
+alias  'gpf!'='git push --force'
+alias  gpp='git pull --prune --prune-tags && git prune'
+alias  gpr='git pull --rebase'
+alias  grb='git rebase'
+alias grbas='git rebase --autosquash -i \`\$(git rev-list $(git_main_branch).. | tail -1)^\'
+alias  grbi='git rebase --interactive'
+alias  grbm='git rebase $(git_main_branch)'
+alias  grbo='git rebase --onto'
+alias  grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
+alias  grh='git reset'
+alias  grt='cd "$(git rev-parse --show-toplevel || echo .)"'
+alias  gst='git status'
+alias  gstp='git stash push'
+alias  gsta='git stash apply'
+
+alias  history=omz_history
+alias  l='ls -lah'
+alias  la='ls -lAh'
+alias  ll='ls -lh'
+alias  ls='ls -G'
+alias  lsa='ls -lah'
+alias  md='mkdir -p'
