@@ -15,7 +15,8 @@ return {
     local keymap = vim.keymap
 
     local opts = { noremap = true, silent = true }
-    local on_attach = function(_, bufnr)
+
+    local on_attach = function(client, bufnr)
       if string.match(vim.api.nvim_buf_get_name(0), "/site-packages/") then
         return
       end
@@ -25,7 +26,10 @@ return {
       opts.buffer = bufnr
 
       opts.desc = "Show LSP references"
-      keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
+      keymap.set("n", "gr", function()
+        vim.notify("Searching for references...", "info", { title = "LSP" })
+        vim.cmd("Telescope lsp_references")
+      end, opts)
 
       opts.desc = "Go to declaration"
       keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
@@ -66,6 +70,10 @@ return {
       vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
         vim.lsp.buf.format()
       end, { desc = 'Format current buffer with LSP' })
+      if client.name == 'ruff_lsp' then
+        -- Disable hover in favor of Pyright
+        client.server_capabilities.hoverProvider = false
+      end
     end
 
     -- used to enable autocompletion (assign to every lsp server config)
@@ -84,43 +92,72 @@ return {
     --   })
     --
     -- configure pylsp server with plugin
-    -- Remember this needs to be set per project to use project specific config 
+    -- Remember this needs to be set per project to use project specific config
     if vim.fn.filereadable(vim.fn.getcwd() .. "/.nvim.lua") == 1 then
       -- Doesn't look like good practice to use dofile, but it works for now
       dofile(vim.fn.getcwd() .. "/.nvim.lua")
     end
-    lspconfig["pylsp"].setup({
+
+    lspconfig.pyright.setup({
       capabilities = capabilities,
       on_attach = on_attach,
       settings = {
-        pylsp = {
-          plugins = {
-            noy_pyls = { enabled = true },
-            pydocstyle = { enabled = false },
-            pycodestyle = { enabled = false },
-            pyflakes = { enabled = false },
-            flake8 = {
-              enabled = true,
-              config = _G.flake8_setup_config_path or ""
-              -- ignore = { "D103", "D101", "D102", "D100", "D401", "E501" }
-            },
-            mccabe = { enabled = false },
-            pylint = { enabled = false },
-            yapf = { enabled = false },
-            pyls_isort = { enabled = false },
-            pylama = { enabled = true },
-            -- pylsp_mypy = { enabled = false, dmypy = true, live_mode = false },
-            jedi_completion = { include_params = true, },
-            ruff = {
-              enabled = true,
-              extendSelect = { "I" },
-              format = { "I" },
-              config = _G.flake8_setup_config_path
-            },
-          }
+        pyright = {
+          disableOrganizeImports = true, -- Using Ruff
+        },
+        python = {
+          analysis = {
+            ignore = { '*' },         -- Using Ruff
+            typeCheckingMode = 'off', -- Using mypy
+          },
+          pythonPath = vim.g.python3_host_prog,
+        },
+      },
+    })
+    lspconfig.ruff_lsp.setup {
+      init_options = {
+        settings = {
+          args = {
+            config = _G.pyproject_toml_path,
+          },
         }
       }
-    })
+    }
+    -- lspconfig["pylsp"].setup({
+    --   capabilities = capabilities,
+    --   on_attach = on_attach,
+    --   settings = {
+    --     pylsp = {
+    --       plugins = {
+    --         noy_pyls = { enabled = true },
+    --         pydocstyle = { enabled = false },
+    --         pycodestyle = { enabled = false },
+    --         pyflakes = { enabled = false },
+    --         -- flake8 = {
+    --         --   enabled = true,
+    --         --   config = _G.flake8_setup_config_path or ""
+    --         --   -- ignore = { "D103", "D101", "D102", "D100", "D401", "E501" }
+    --         -- },
+    --         mccabe = { enabled = false },
+    --         pylint = { enabled = false },
+    --         yapf = { enabled = false },
+    --         pyls_isort = { enabled = false },
+    --         pylama = { enabled = true },
+    --         -- pylsp_mypy = { enabled = false, dmypy = true, live_mode = false },
+    --         jedi_completion = { include_params = true, },
+    --         jedi_hover = { enabled = true },
+    --         jedi_signature_help = { enabled = true },
+    --         jedi_symbols = { enabled = true },
+    --         ruff = {
+    --           enabled = true,
+    --           extendSelect = { "I" },
+    --           format = { "I" },
+    --           config = _G.flake8_setup_config_path
+    --         },
+    --       }
+    --     }
+    --   }
+    -- })
 
     lspconfig["lua_ls"].setup({
       capabilities = capabilities,
