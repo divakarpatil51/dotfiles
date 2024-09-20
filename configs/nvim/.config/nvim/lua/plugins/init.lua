@@ -22,11 +22,17 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      sections = {
-        lualine_x = { 'encoding', 'fileformat', 'filetype', clock },
-      }
-    },
+    config = function()
+      if vim.fn.filereadable(vim.fn.getcwd() .. "/.nvim.lua") == 1 then
+        -- Doesn't look like good practice to use dofile, but it works for now
+        dofile(vim.fn.getcwd() .. "/.nvim.lua")
+      end
+      require("lualine").setup({
+        sections = {
+          lualine_x = { _G.lualine_x_section or "", 'encoding', 'fileformat', 'filetype', clock },
+        }
+      })
+    end
   },
   {
     'rcarriga/nvim-notify',
@@ -58,5 +64,5 @@ return {
       vim.keymap.set({ "n", "v" }, "<leader>/", api.toggle.linewise.current)
       vim.keymap.set({ "i" }, "<C-_>", api.toggle.linewise.current)
     end,
-  }
+  },
 }

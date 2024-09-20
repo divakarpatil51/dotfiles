@@ -27,6 +27,8 @@ return {
         "lua_ls",
         "graphql",
         "pylsp",
+        "pyright",
+        "ruff_lsp",
       },
       -- auto-install configured servers (with lspconfig)
       automatic_installation = true, -- not the same as ensure_installed
@@ -37,10 +39,6 @@ return {
         "prettier", -- prettier formatter
         "stylua",   -- lua formatter
         "ruff",     -- python formatter
-        -- "black",    -- python formatter
-        -- "pylint",   -- python linter
-        -- "eslint_d", -- js linter
-        -- "djlint",   -- djangohtml linter
       },
     })
   end,
