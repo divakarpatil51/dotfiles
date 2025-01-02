@@ -1,3 +1,5 @@
+
+
 return {
   'nvim-telescope/telescope.nvim',
   branch = '0.1.x',
@@ -85,6 +87,9 @@ return {
     local map = vim.keymap.set
 
     local telescopeBuiltin = require("telescope.builtin")
+    local finders = require("telescope.finders")
+    local pickers = require("telescope.pickers")
+    local make_entry = require("telescope.make_entry")
 
     map('n', '<leader>ff', telescopeBuiltin.find_files, { desc = 'Find Files' })
     map('n', '<leader>fa', function()
@@ -94,24 +99,38 @@ return {
       local cwd_with_tests = vim.fn.getcwd() .. '/src/tests'
       telescopeBuiltin.live_grep({ cwd = cwd_with_tests })
     end, { desc = 'Find in tests' })
-    map('n', '<leader>fg', function()
-      local live_grep_in_glob = function(glob_pattern)
-        telescopeBuiltin.live_grep({
-          prompt_title="Searching in glob pattern: " .. (glob_pattern or "All files"),
-          vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-            "--glob=" .. (glob_pattern or ""),
-          }
-        }
-        )
-      end
-      vim.ui.input({ prompt = "Glob: ", completion = "file", default = "**/*." }, live_grep_in_glob)
+    map('n', '<leader>fg', function(opts)
+      opts = opts or {}
+      opts.cwd = vim.fn.getcwd()
+      local finder = finders.new_async_job {
+        command_generator = function(prompt)
+          if not prompt or prompt == "" then
+            return nil
+          end
+
+          local args = { "rg" }
+          local pieces = vim.split(prompt, "  ")
+          if pieces[1] then
+            table.insert(args, "-e")
+            table.insert(args, pieces[1])
+          end
+
+          if pieces[2] then
+            for _, path in ipairs(vim.split(pieces[2], " ")) do
+              table.insert(args, "-g")
+              table.insert(args, path)
+            end
+          end
+          return vim.tbl_flatten { args, "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" }
+        end,
+        entry_maker = make_entry.gen_from_vimgrep { opts },
+        cwd = opts.cwd,
+      }
+      pickers.new(opts, {
+        prompt_title = "Multi Grep (Enter two spaces to separate search and path. Multiple paths can be separated by space)",
+        finder = finder,
+        previewer = require("telescope.config").values.file_previewer(opts),
+      }):find()
     end, { desc = 'Find in glob' })
 
     -- map('n', '<leader>fh', telescopeBuiltin.help_tags, { desc = 'Help Page' })
@@ -135,7 +154,5 @@ return {
     map('n', '<leader>lq', telescopeBuiltin.quickfix, { desc = 'List quickfix' })
     map('n', '<leader>lk', telescopeBuiltin.keymaps, { desc = 'List keymaps' })
     map('n', '<leader>lm', telescopeBuiltin.marks, { desc = 'List Bookmarks' })
-    map('n', '<leader>lv', telescopeBuiltin.vim_options, { desc = 'List Bookmarks' })
-    map('n', '<leader>lt', telescopeBuiltin.filetypes, { desc = 'List Bookmarks' })
   end
 }

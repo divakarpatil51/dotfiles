@@ -8,7 +8,7 @@ map("v", "K", ":m '<-2<CR>gv=gv")
 map("x", "<leader>p", [["_dP]])
 map({"n", "v"}, "<leader>y", [["+y]])
 map("n", "<leader>Y", [["+Y]])
-map({"n", "v"}, "<leader>d", [["_d]])
+-- map({"n", "v"}, "<leader>d", [["_d]])
 map("n", "J", "mzJ`z")
 map("n", "<C-d>", "<C-d>zz")
 map("n", "<C-u>", "<C-u>zz")
@@ -56,10 +56,12 @@ map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list
 
 -- Git Mappings
 map('n', '<leader>gs', "<cmd>Git<cr>", { desc = 'Git Status' })
-map('n', '<leader>gbl', "<cmd>Git blame<cr>", { desc = 'Git Blame' })
+map('n', '<leader>gbf', "<cmd>Gitsigns blame<cr>", { desc = 'Git Blame' })
+map('n', '<leader>gbl', "<cmd>Gitsigns blame_line<cr>", { desc = 'Git Blame line' })
 map('n', '<leader>gbr', "<cmd>Git branch<cr>", { desc = 'Git Branch' })
 map('n', '<leader>gd', "<cmd>Gdiffsplit<cr>", { desc = 'Git Diff' })
 map('n', '<leader>gl', "<cmd>Gclog<cr>", { desc = 'Git Log' })
+map({ 'n', 'v' }, '<leader>gh', "<cmd>.GBrowse! \"$(git_main_branch)\":%<cr>", { desc = 'Copy GH reference for selected lines' })
 
 map('n', '<leader>ot', ":split | term<cr>", { desc = 'Open terminal in a new split' })
 map('n', '<F9>', ":w | split | terminal python %<cr>", { desc = 'Run python script' })
@@ -68,3 +70,5 @@ map('n', '<F9>', ":w | split | terminal python %<cr>", { desc = 'Run python scri
 vim.api.nvim_set_keymap('t', '<ESC>', [[<C-\><C-n>]], { noremap = true })
 
 map('n', '<leader>le', ":ALEToggle<cr>", { desc = 'Toggle ALE linting' })
+map('n', '∆', ":cnext<cr>", { desc = 'Quickfix next' })
+map('n', '¬', ":cprevious<cr>", { desc = 'Quickfix prev' })

@@ -27,7 +27,6 @@ return {
 
       opts.desc = "Show LSP references"
       keymap.set("n", "gr", function()
-        vim.notify("Searching for references...", "info", { title = "LSP" })
         vim.cmd("Telescope lsp_references")
       end, opts)
 
@@ -70,7 +69,7 @@ return {
       vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
         vim.lsp.buf.format()
       end, { desc = 'Format current buffer with LSP' })
-      if client.name == 'ruff_lsp' then
+      if client.name == 'ruff' then
         -- Disable hover in favor of Pyright
         client.server_capabilities.hoverProvider = false
       end
@@ -98,23 +97,83 @@ return {
       dofile(vim.fn.getcwd() .. "/.nvim.lua")
     end
 
-    lspconfig.pyright.setup({
-      capabilities = capabilities,
-      on_attach = on_attach,
+
+    lspconfig.basedpyright.setup({
       settings = {
-        pyright = {
-          disableOrganizeImports = true, -- Using Ruff
-        },
         python = {
           analysis = {
-            ignore = { '*' },         -- Using Ruff
-            typeCheckingMode = 'off', -- Using mypy
+            -- Use new type analyzer (more accurate)
+            typeCheckingMode = "standard",
+            -- Cache analysis results
+            useLibraryCodeForTypes = true,
+            autoSearchPaths = true,
+            -- Performance settings
+            diagnosticMode = "openFilesOnly",
+            maxImportDepth = 5,
+            -- Customize diagnostics
+            diagnosticSeverityOverrides = {
+              -- Optionally downgrade some diagnostics
+              reportUnusedImport = "none",
+              reportUnusedVariable = "none",
+              reportGeneralTypeIssues = "none",
+              reportOptionalMemberAccess = "none",
+              reportOptionalSubscript = "none",
+              reportPrivateImportUsage = "none",
+              reportAttributeAccessIssue = "none",
+              reportIncompatibleVariableOverride = "none",
+              -- reportTypedDictNotRequiredAccess = "warning",
+            },
+            -- Ignore specific directories
+            exclude = {
+              '**/__pycache__',
+              '**/node_modules',
+              '.git',
+              '.env',
+              'venv',
+              '.venv',
+              'env',
+            },
           },
-          pythonPath = vim.g.python3_host_prog,
         },
       },
+      -- Improve responsiveness
+      flags = {
+        debounce_text_changes = 150,
+      },
+      capabilities = capabilities,
+      -- Optionally disable certain features if you need more performance
+      on_attach = on_attach,
     })
-    lspconfig.ruff_lsp.setup {
+    -- lspconfig.pyright.setup({
+    --   capabilities = capabilities,
+    --   on_attach = on_attach,
+    --   settings = {
+    --     pyright = {
+    --       disableOrganizeImports = true, -- Using Ruff
+    --       python = {
+    --         analysis = {
+    --           ignore = { '*' }, -- Using Ruff
+    --           autoSearchPaths = false,
+    --           useLibraryCodeForTypes = false,
+    --           diagnosticMode = "openFilesOnly",
+    --           diagnosticSeverityOverrides = {
+    --             reportGeneralTypeIssues = "none",
+    --             reportOptionalMemberAccess = "none",
+    --             reportOptionalSubscript = "none",
+    --             reportPrivateImportUsage = "none",
+    --             reportAttributeAccessIssue = "none",
+    --             reportIncompatibleVariableOverride = "none",
+    --             -- reportTypedDictNotRequiredAccess = "warning",
+    --           },
+    --           autoImportCompletions = false,
+    --           typeCheckingMode = 'off', -- Using mypy
+    --         },
+    --       },
+    --       pythonPath = vim.g.python3_host_prog,
+    --     },
+    --   },
+    -- })
+    lspconfig.ruff.setup {
       init_options = {
         settings = {
           args = {
