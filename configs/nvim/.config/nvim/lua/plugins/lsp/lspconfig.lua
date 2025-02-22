@@ -3,14 +3,16 @@ return {
   'neovim/nvim-lspconfig',
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    "hrsh7th/cmp-nvim-lsp",
-    'folke/neodev.nvim',
-    'j-hui/fidget.nvim',
+    -- { "hrsh7th/cmp-nvim-lsp", lazy = true, event = { "BufReadPre", "BufNewFile" }, },
+    { "saghen/blink.cmp", lazy = true, event = { "BufReadPre", "BufNewFile" }, },
+    { "folke/neodev.nvim",    lazy = true, event = { "BufReadPre", "BufNewFile" }, },
+    { "j-hui/fidget.nvim",    lazy = true, event = { "BufReadPre", "BufNewFile" }, },
   },
   config = function()
     local lspconfig = require("lspconfig")
 
-    local cmp_nvim_lsp = require("cmp_nvim_lsp")
+    -- local cmp_nvim_lsp = require("cmp_nvim_lsp")
+    local cmp_nvim_lsp = require("blink.cmp")
 
     local keymap = vim.keymap
 
@@ -30,17 +32,6 @@ return {
         vim.cmd("Telescope lsp_references")
       end, opts)
 
-      opts.desc = "Go to declaration"
-      keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-
-      opts.desc = "Show LSP definitions"
-      keymap.set("n", "gd", "<cmd>vsplit | Telescope lsp_definitions<CR>", opts)
-
-      opts.desc = "Show LSP implementations"
-      keymap.set("n", "gi", "<cmd>vsplit | Telescope lsp_implementations<CR>", opts)
-
-      opts.desc = "Show LSP type definitions"
-      keymap.set("n", "gt", "<cmd>vsplit | Telescope lsp_type_definitions<CR>", opts)
 
       opts.desc = "See available code actions"
       keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
@@ -48,17 +39,8 @@ return {
       opts.desc = "Smart rename"
       keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
-      opts.desc = "Show buffer diagnostics"
-      keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
-
-      opts.desc = "Show line diagnostics"
-      keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
-
-      opts.desc = "Go to previous diagnostic"
-      keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-
-      opts.desc = "Go to next diagnostic"
-      keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+      -- opts.desc = "Show buffer diagnostics"
+      -- keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
 
       opts.desc = "Show documentation for what is under cursor"
       keymap.set("n", "K", vim.lsp.buf.hover, opts)
@@ -76,7 +58,7 @@ return {
     end
 
     -- used to enable autocompletion (assign to every lsp server config)
-    local capabilities = cmp_nvim_lsp.default_capabilities()
+    local capabilities = cmp_nvim_lsp.get_lsp_capabilities()
 
     local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
     for type, icon in pairs(signs) do
@@ -97,7 +79,11 @@ return {
       dofile(vim.fn.getcwd() .. "/.nvim.lua")
     end
 
-
+    lspconfig.gopls.setup {
+      capabilities = capabilities,
+      -- Optionally disable certain features if you need more performance
+      on_attach = on_attach,
+    }
     lspconfig.basedpyright.setup({
       settings = {
         python = {
@@ -127,11 +113,18 @@ return {
             exclude = {
               '**/__pycache__',
               '**/node_modules',
-              '.git',
               '.env',
               'venv',
               '.venv',
               'env',
+              "**/.vscode",
+              "**/.git",
+              "**/.mypy_cache",
+              "**/.pytest_cache",
+              "**/.tox",
+              "**/htmlcov",
+              "**/*.egg-info",
+              "**/migrations",
             },
           },
         },
@@ -182,6 +175,12 @@ return {
         }
       }
     }
+
+    vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+      update_in_insert = false, -- Disable diagnostics while typing
+      underline = true,         -- Underline the errors
+      virtual_text = false,     -- Disable inline error text
+    })
     -- lspconfig["pylsp"].setup({
     --   capabilities = capabilities,
     --   on_attach = on_attach,

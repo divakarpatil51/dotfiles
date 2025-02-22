@@ -26,10 +26,11 @@ return {
         "html",
         "lua_ls",
         "graphql",
-        "pylsp",
-        "pyright",
+        -- "pylsp",
+        -- "pyright",
         "ruff",
-        "basedpyright"
+        "basedpyright",
+        "gopls",
       },
       -- auto-install configured servers (with lspconfig)
       automatic_installation = true, -- not the same as ensure_installed
@@ -40,6 +41,10 @@ return {
         "prettier", -- prettier formatter
         "stylua",   -- lua formatter
         "ruff",     -- python formatter
+        "markdownlint",
+        "json-lsp",
+        "djlint",
+        "golangci-lint"
       },
     })
   end,

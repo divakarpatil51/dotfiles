@@ -6,7 +6,7 @@ map("v", "J", ":m '>+1<CR>gv=gv")
 map("v", "K", ":m '<-2<CR>gv=gv")
 
 map("x", "<leader>p", [["_dP]])
-map({"n", "v"}, "<leader>y", [["+y]])
+map({ "n", "v" }, "<leader>y", [["+y]])
 map("n", "<leader>Y", [["+Y]])
 -- map({"n", "v"}, "<leader>d", [["_d]])
 map("n", "J", "mzJ`z")
@@ -61,10 +61,28 @@ map('n', '<leader>gbl', "<cmd>Gitsigns blame_line<cr>", { desc = 'Git Blame line
 map('n', '<leader>gbr', "<cmd>Git branch<cr>", { desc = 'Git Branch' })
 map('n', '<leader>gd', "<cmd>Gdiffsplit<cr>", { desc = 'Git Diff' })
 map('n', '<leader>gl', "<cmd>Gclog<cr>", { desc = 'Git Log' })
-map({ 'n', 'v' }, '<leader>gh', "<cmd>.GBrowse! \"$(git_main_branch)\":%<cr>", { desc = 'Copy GH reference for selected lines' })
+map({ 'n', 'v' }, '<leader>gh', "<cmd>.GBrowse! \"$(git_main_branch)\":%<cr>",
+	{ desc = 'Copy GH reference for selected lines' })
 
 map('n', '<leader>ot', ":split | term<cr>", { desc = 'Open terminal in a new split' })
-map('n', '<F9>', ":w | split | terminal python %<cr>", { desc = 'Run python script' })
+map('n', '<F9>', function()
+	local file_name = vim.fn.expand('%:p')
+	local file_extension = file_name:match("^.+(%..+)$")
+
+	local cmd = ":w | split | terminal"
+	if file_extension == ".py" then
+		vim.cmd(cmd .. " python %")
+		return
+	end
+	if file_extension == ".go" then
+		vim.cmd(cmd .. " go run %")
+		return
+	end
+	if file_extension == ".lua" then
+		vim.cmd(cmd .. " lua %")
+		return
+	end
+end, { desc = 'Run python script' })
 
 -- Terminal mode command
 vim.api.nvim_set_keymap('t', '<ESC>', [[<C-\><C-n>]], { noremap = true })

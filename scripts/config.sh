@@ -7,6 +7,8 @@ symlink_dotfiles(){
 			".config/nvim"
 			".config/kitty"
 			".config/tmux"
+			".config/ghostty"
+			".config/helix"
 	)
 	for d in "${folders[@]}"; do
 			rm -rf "${HOME:?}/$d" || true
@@ -14,6 +16,6 @@ symlink_dotfiles(){
 	done
 
 	# Stow automates the process of creating symbolic links to files and directories
-	stow -d configs --verbose 1 --target "$HOME" kitty nvim tmux vim zsh
+	stow -d configs --verbose 1 --target "$HOME" kitty nvim tmux vim zsh ghostty helix
 	success "Symlinking successful..."
 }

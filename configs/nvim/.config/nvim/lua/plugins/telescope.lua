@@ -2,10 +2,9 @@
 
 return {
   'nvim-telescope/telescope.nvim',
+  event = 'BufReadPost',
   branch = '0.1.x',
   dependencies = {
-    'nvim-lua/plenary.nvim',
-    "nvim-tree/nvim-web-devicons",
     {
       'nvim-telescope/telescope-fzf-native.nvim',
       build = 'make',
@@ -91,68 +90,70 @@ return {
     local pickers = require("telescope.pickers")
     local make_entry = require("telescope.make_entry")
 
-    map('n', '<leader>ff', telescopeBuiltin.find_files, { desc = 'Find Files' })
-    map('n', '<leader>fa', function()
-      telescopeBuiltin.find_files({ follow = true, hidden = true, no_ignore = true })
-    end, { desc = 'Find All' })
-    map('n', '<leader>ft', function()
-      local cwd_with_tests = vim.fn.getcwd() .. '/src/tests'
-      telescopeBuiltin.live_grep({ cwd = cwd_with_tests })
-    end, { desc = 'Find in tests' })
-    map('n', '<leader>fg', function(opts)
-      opts = opts or {}
-      opts.cwd = vim.fn.getcwd()
-      local finder = finders.new_async_job {
-        command_generator = function(prompt)
-          if not prompt or prompt == "" then
-            return nil
-          end
-
-          local args = { "rg" }
-          local pieces = vim.split(prompt, "  ")
-          if pieces[1] then
-            table.insert(args, "-e")
-            table.insert(args, pieces[1])
-          end
-
-          if pieces[2] then
-            for _, path in ipairs(vim.split(pieces[2], " ")) do
-              table.insert(args, "-g")
-              table.insert(args, path)
-            end
-          end
-          return vim.tbl_flatten { args, "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" }
-        end,
-        entry_maker = make_entry.gen_from_vimgrep { opts },
-        cwd = opts.cwd,
-      }
-      pickers.new(opts, {
-        prompt_title = "Multi Grep (Enter two spaces to separate search and path. Multiple paths can be separated by space)",
-        finder = finder,
-        previewer = require("telescope.config").values.file_previewer(opts),
-      }):find()
-    end, { desc = 'Find in glob' })
-
-    -- map('n', '<leader>fh', telescopeBuiltin.help_tags, { desc = 'Help Page' })
-    map('n', '<leader>fs', telescopeBuiltin.grep_string, { desc = 'Find current string' })
-    map('n', '<leader>fw', telescopeBuiltin.live_grep, { desc = 'Find by Grep' })
-    map('n', '<leader>fd', telescopeBuiltin.diagnostics, { desc = 'Search Diagnostics' })
-    map('n', '<leader>fr', telescopeBuiltin.resume, { desc = 'Find Resume' })
-    map('n', '<leader>fo', telescopeBuiltin.oldfiles, { desc = 'Find recently opened files' })
-    map('n', '<leader>fb', telescopeBuiltin.buffers, { desc = 'Find existing buffers' })
-    map('n', '<leader>fz', function()
-      telescopeBuiltin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-        winblend = 10,
-        previewer = false,
-      })
-    end, { desc = 'Fuzzily search in current buffer' })
-
-    -- List objects
-    map('n', '<leader>lf', telescopeBuiltin.lsp_document_symbols, { desc = 'List Functions, Variables in the file.' })
-    map('n', '<leader>lr', telescopeBuiltin.registers, { desc = 'List registers' })
-    map('n', '<leader>lc', telescopeBuiltin.colorscheme, { desc = 'List color schemes' })
-    map('n', '<leader>lq', telescopeBuiltin.quickfix, { desc = 'List quickfix' })
-    map('n', '<leader>lk', telescopeBuiltin.keymaps, { desc = 'List keymaps' })
-    map('n', '<leader>lm', telescopeBuiltin.marks, { desc = 'List Bookmarks' })
+    -- map('n', '<leader>ff', telescopeBuiltin.find_files, { desc = 'Find Files' })
+    -- map('n', '<leader>ff', Snacks.picker.files, { desc = 'Find Files' })
+    -- map('n', '<leader>fp', Snacks.picker.projects, { desc = 'Find projects' })
+    -- map('n', '<leader>fa', function()
+    --   telescopeBuiltin.find_files({ follow = true, hidden = true, no_ignore = true })
+    -- end, { desc = 'Find All' })
+    -- map('n', '<leader>ft', function()
+    --   local cwd_with_tests = vim.fn.getcwd() .. '/src/tests'
+    --   telescopeBuiltin.live_grep({ cwd = cwd_with_tests })
+    -- end, { desc = 'Find in tests' })
+    -- map('n', '<leader>fg', function(opts)
+    --   opts = opts or {}
+    --   opts.cwd = vim.fn.getcwd()
+    --   local finder = finders.new_async_job {
+    --     command_generator = function(prompt)
+    --       if not prompt or prompt == "" then
+    --         return nil
+    --       end
+    --
+    --       local args = { "rg" }
+    --       local pieces = vim.split(prompt, "  ")
+    --       if pieces[1] then
+    --         table.insert(args, "-e")
+    --         table.insert(args, pieces[1])
+    --       end
+    --
+    --       if pieces[2] then
+    --         for _, path in ipairs(vim.split(pieces[2], " ")) do
+    --           table.insert(args, "-g")
+    --           table.insert(args, path)
+    --         end
+    --       end
+    --       return vim.tbl_flatten { args, "--color=never", "--no-heading", "--with-filename", "--line-number", "--column", "--smart-case" }
+    --     end,
+    --     entry_maker = make_entry.gen_from_vimgrep { opts },
+    --     cwd = opts.cwd,
+    --   }
+    --   pickers.new(opts, {
+    --     prompt_title = "Multi Grep (Enter two spaces to separate search and path. Multiple paths can be separated by space)",
+    --     finder = finder,
+    --     previewer = require("telescope.config").values.file_previewer(opts),
+    --   }):find()
+    -- end, { desc = 'Find in glob' })
+    --
+    -- -- map('n', '<leader>fh', telescopeBuiltin.help_tags, { desc = 'Help Page' })
+    -- map('n', '<leader>fs', telescopeBuiltin.grep_string, { desc = 'Find current string' })
+    -- map('n', '<leader>fw', telescopeBuiltin.live_grep, { desc = 'Find by Grep' })
+    -- map('n', '<leader>fd', telescopeBuiltin.diagnostics, { desc = 'Search Diagnostics' })
+    -- map('n', '<leader>fr', telescopeBuiltin.resume, { desc = 'Find Resume' })
+    -- map('n', '<leader>fo', telescopeBuiltin.oldfiles, { desc = 'Find recently opened files' })
+    -- map('n', '<leader>fb', telescopeBuiltin.buffers, { desc = 'Find existing buffers' })
+    -- map('n', '<leader>fz', function()
+    --   telescopeBuiltin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+    --     winblend = 10,
+    --     previewer = false,
+    --   })
+    -- end, { desc = 'Fuzzily search in current buffer' })
+    --
+    -- -- List objects
+    -- map('n', '<leader>lf', telescopeBuiltin.lsp_document_symbols, { desc = 'List Functions, Variables in the file.' })
+    -- map('n', '<leader>lr', telescopeBuiltin.registers, { desc = 'List registers' })
+    -- map('n', '<leader>lc', telescopeBuiltin.colorscheme, { desc = 'List color schemes' })
+    -- map('n', '<leader>lq', telescopeBuiltin.quickfix, { desc = 'List quickfix' })
+    -- map('n', '<leader>lk', telescopeBuiltin.keymaps, { desc = 'List keymaps' })
+    -- map('n', '<leader>lm', telescopeBuiltin.marks, { desc = 'List Bookmarks' })
   end
 }

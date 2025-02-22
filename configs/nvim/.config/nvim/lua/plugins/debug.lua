@@ -1,9 +1,11 @@
 return {
   'mfussenegger/nvim-dap',
+  lazy = true,
+  event = { "BufReadPre" },
   dependencies = {
     'rcarriga/nvim-dap-ui',
 
-    'williamboman/mason.nvim',
+    -- 'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
     'mfussenegger/nvim-dap-python',

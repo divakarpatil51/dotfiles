@@ -1,0 +1,92 @@
+[language-server]
+ruff = { command = "ruff", args = ["server"] }
+
+[language-server.basedpyright.config]
+command = ["basedpyright-langserver", "--stdio"]
+ 
+[[language]]
+name = "python"
+scope = "source.python"
+injection-regex = "py(thon)?"
+file-types = ["py", "pyi", "py3", "pyw", "ptl", "rpy", "cpy", "ipy", "pyt", { glob = ".python_history" }, { glob = ".pythonstartup" }, { glob = ".pythonrc" }, { glob = "SConstruct" }, { glob = "SConscript" }]
+shebangs = ["python", "uv"]
+roots = ["pyproject.toml", "setup.py", "poetry.lock", "pyrightconfig.json"]
+comment-token = "#"
+language-servers = ["basedpyright","ruff"]
+# TODO: pyls needs utf-8 offsets
+indent = { tab-width = 4, unit = "    " }
+
+[[grammar]]
+name = "python"
+source = { git = "https://github.com/tree-sitter/tree-sitter-python" }
+
+[language-server.gopls]
+command = "gopls"
+
+[language-server.gopls.config.hints]
+assignVariableTypes = true
+compositeLiteralFields = true
+constantValues = true
+functionTypeParameters = true
+parameterNames = true
+rangeVariableTypes = true
+
+[language-server.golangci-lint-lsp]
+command = "golangci-lint-langserver"
+
+[language-server.golangci-lint-lsp.config]
+command = ["golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1"]
+
+[[language]]
+name = "go"
+scope = "source.go"
+injection-regex = "go"
+file-types = ["go"]
+roots = ["go.work", "go.mod"]
+auto-format = true
+comment-token = "//"
+block-comment-tokens = { start = "/*", end = "*/" }
+language-servers = [ "gopls", "golangci-lint-lsp" ]
+# TODO: gopls needs utf-8 offsets?
+indent = { tab-width = 4, unit = "\t" }
+
+[language.debugger]
+name = "go"
+transport = "tcp"
+command = "dlv"
+args = ["dap"]
+port-arg = "-l 127.0.0.1:{}"
+
+[[language.debugger.templates]]
+name = "source"
+request = "launch"
+completion = [ { name = "entrypoint", completion = "filename", default = "." } ]
+args = { mode = "debug", program = "{0}" }
+
+[[language.debugger.templates]]
+name = "binary"
+request = "launch"
+completion = [ { name = "binary", completion = "filename" } ]
+args = { mode = "exec", program = "{0}" }
+
+[[language.debugger.templates]]
+name = "test"
+request = "launch"
+completion = [ { name = "tests", completion = "directory", default = "." } ]
+args = { mode = "test", program = "{0}" }
+
+[[language.debugger.templates]]
+name = "attach"
+request = "attach"
+completion = [ "pid" ]
+args = { mode = "local", processId = "{0}" }
+
+[[language.debugger.templates]]
+name = "core"
+request = "launch"
+completion = [ { name = "binary", completion = "filename" }, { name = "core", completion = "filename" } ]
+args = { mode = "core", program = "{0}", coreFilePath = "{1}" }
+
+[[grammar]]
+name = "go"
+source = { git = "https://github.com/tree-sitter/tree-sitter-go", rev = "64457ea6b73ef5422ed1687178d4545c3e91334a" }

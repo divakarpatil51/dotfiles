@@ -1,6 +1,7 @@
 return {
   {
     "rose-pine/neovim",
+    lazy = true,
     priority = 1000, -- make sure to load this before all the other start plugins
     opts = {
       transparent = true,
@@ -15,6 +16,7 @@ return {
   },
   {
     'navarasu/onedark.nvim',
+    lazy = true,
     priority = 999,
     config = function()
       vim.cmd.colorscheme 'onedark'
@@ -33,9 +35,17 @@ return {
   },
   {
     "rebelot/kanagawa.nvim",
-    priority=10,
+    priority = 10,
     config = function()
       vim.cmd.colorscheme 'kanagawa'
+    end
+  },
+  {
+    "ellisonleao/gruvbox.nvim",
+    lazy = true,
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme 'gruvbox'
     end
   }
   -- {
