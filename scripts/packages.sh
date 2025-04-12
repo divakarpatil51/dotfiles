@@ -24,7 +24,9 @@ install_brew_packages() {
 			rename
 			ripgrep
 			rust-analyzer
+			terminal-notifier
 			hugo
+			ollama
 			sqlite
 			tmux
 			wget
@@ -35,10 +37,12 @@ install_brew_packages() {
 			lazygit
 			pyenv
 			go
+			gopls
 			httpie     # https://github.com/httpie/httpie
 			k9s        # https://github.com/derailed/k9s
 			kubernetes-cli
 			postgresql
+			uv
 			zoxide     # https://github.com/ajeetdsouza/zoxide
 	)
 
@@ -52,6 +56,7 @@ install_brew_casks() {
 	CASKS=(
 			1password-cli
 			alfred
+			anki
 			caffeine
 			google-chrome
 			arc
@@ -65,6 +70,11 @@ install_brew_casks() {
 			kitty
 			postgres-unofficial # App wrapper for Postgres.app
 			font-fira-code
+			raycast
+			obsidian
+			datagrip
+			coscreen #https://www.coscreen.co/
+			logseq
 	)
 
 	info "Installing brew casks..."
