@@ -23,6 +23,7 @@ install_brew_packages() {
 			rabbitmq
 			rename
 			ripgrep
+			rustup
 			rust-analyzer
 			terminal-notifier
 			hugo
@@ -37,6 +38,7 @@ install_brew_packages() {
 			lazygit
 			pyenv
 			go
+			golang
 			gopls
 			httpie     # https://github.com/httpie/httpie
 			k9s        # https://github.com/derailed/k9s
@@ -44,6 +46,8 @@ install_brew_packages() {
 			postgresql
 			uv
 			zoxide     # https://github.com/ajeetdsouza/zoxide
+			powerlevel10k
+			zsh-autosuggestions
 	)
 
 	info "Installing brew packages..."
@@ -52,7 +56,7 @@ install_brew_packages() {
 }
 
 
-install_brew_casks() {
+install_all_brew_casks() {
 	CASKS=(
 			1password-cli
 			alfred
@@ -60,7 +64,6 @@ install_brew_casks() {
 			caffeine
 			google-chrome
 			arc
-			kindle
 			rectangle
 			slack
 			spotify

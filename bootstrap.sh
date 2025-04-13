@@ -9,13 +9,12 @@
 # Inspirations:
 # -- https://github.com/protiumx/.dotfiles
 
-# - Postgres.app (http://postgresapp.com/)
-
 info "Starting bootstrapping"
 
 brew update
 
 install_brew_packages
+install_all_brew_casks 
 
 # Remove outdated versions from the cellar.
 brew cleanup
@@ -25,10 +24,6 @@ if [[ ! -d "$OMZDIR" ]]; then
     info 'Installing oh-my-zsh...'
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
-
-info "Installing fonts..."
-apply_brew_taps homebrew/cask-fonts
-install_brew_casks font-fira-code
 
 symlink_dotfiles
 

@@ -80,10 +80,12 @@ ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 plugins=(git zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -105,7 +107,6 @@ export EDITOR='nvim'
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -141,14 +142,6 @@ eval "$(direnv hook zsh)" >/dev/null
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Enable fuzzy finding
-eval "$(fzf --zsh)"
-
-for file in ~/.{exports,aliases,functions,extra}; do
-	[ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;
-unset file;
-
 # This is required otherwise nvim doesn't load venv properly
 function nvimvenv {
   if [[ -e "$VIRTUAL_ENV" && -f "$VIRTUAL_ENV/bin/activate" ]]; then
@@ -162,8 +155,19 @@ function nvimvenv {
 
 alias nvim=nvimvenv
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#
 eval "$(zoxide init zsh)"
+
+export PATH="/Applications/Postgres.app/Contents/Versions/15/bin:$PATH"
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# Enable fuzzy finding
+eval "$(fzf --zsh)"
+
+for file in ~/.{exports,aliases,functions,extra}; do
+	[ -r "$file" ] && [ -f "$file" ] && source "$file";
+done;
+unset file;
+
+eval "$(direnv hook $SHELL)" >/dev/null

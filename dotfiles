@@ -39,7 +39,7 @@ install_homebrew() {
 		warn "Homebrew already installed"
 	else
 		info "Installing homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	fi
 }
 
@@ -57,10 +57,13 @@ else
   brew install git
 fi
 
-info "Cloning dotfiles repo from $REPO_URL into $REPO_PATH"
-git clone "$REPO_URL" "$REPO_PATH"
+info "Setting up dotfiles repo"
+if [[ ! -d "$REPO_PATH" ]]; then
+	info "Cloning dotfiles repo from $REPO_URL into $REPO_PATH"
+	git clone "$REPO_URL" "$REPO_PATH"
+fi
 
 info "Change path to $REPO_PATH"
 cd "$REPO_PATH" >/dev/null
 
-./bootstrap.sh
+sh ./bootstrap.sh
